@@ -26,3 +26,7 @@
                  (cmql-core.operators.stages/sort :orderDate)    ;;if in q enviroment no need for namespace
                  {:cumulativeQuantityForState (sum :quantity)
                   :documents ["unbounded" "current"]}))
+
+(pprint (wfields :state
+                 (cmql-core.operators.stages/sort :orderDate)    ;;if in q enviroment no need for namespace
+                 {:cumulativeQuantityForState (dense-rank)}))
