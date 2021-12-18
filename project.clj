@@ -5,8 +5,12 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.clojure/data.json "2.4.0"]
-                 [org.cmql/cmql-core "0.1.0-SNAPSHOT"]
-                 [org.cmql/cmql-j "0.1.0-SNAPSHOT"]]
+                 [org.cmql/cmql-core "0.2.0-SNAPSHOT"]
+                 [org.cmql/cmql-j "0.1.0-SNAPSHOT"]
+
+                 ;;;
+                 ;;[org.clojure/tools.logging "0.3.1"]
+                 ]
 
   :source-paths ["src/clojure"]
   :java-source-paths ["src/java"]
