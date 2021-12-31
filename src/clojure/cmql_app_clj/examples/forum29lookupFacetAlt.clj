@@ -1,6 +1,8 @@
 (ns cmql-app-clj.examples.forum29lookupFacetAlt
   (:refer-clojure :only [])
   (:use cmql-core.operators.operators
+        cmql-core.operators.qoperators
+        cmql-core.operators.uoperators
         cmql-core.operators.stages
         cmql-core.operators.options
         cmql-j.driver.cursor

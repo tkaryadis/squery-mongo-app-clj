@@ -1,6 +1,8 @@
 (ns cmql-app-clj.cmql.commands.read_write.t5find-and-modify
   (:refer-clojure :only [])
   (:use cmql-core.operators.operators
+        cmql-core.operators.qoperators
+        cmql-core.operators.uoperators
         cmql-core.operators.stages
         cmql-core.operators.options
         cmql-j.driver.cursor
@@ -11,8 +13,7 @@
         cmql-j.arguments
         cmql-j.commands
         cmql-j.macros
-        clojure.pprint
-        flatland.ordered.map)
+        clojure.pprint)
   (:refer-clojure)
   (:require [clojure.core :as c])
   (:import (com.mongodb.client MongoClients MongoCollection MongoClient)
@@ -80,11 +81,24 @@
 (prn (get modified :value))
 
 (def modified-upserted (find-and-modify :testdb.testcoll
-                                        {:_id 4}
-                                        {:upsert true}  ;;if upsert true i cant use aggregation for query so i use the {:id 3}
+                                        (upsert {:_id 4})
                                         {:name (if- (exists? :name)
                                                     (str :name "-with-id=4")
                                                     "new-name")}
+                                        (fields-o :!_id :name)
+                                        (new-o)))
+
+(println "----------Returned doc upserted------------")
+(prn (get modified-upserted :value))
+
+(println "----------After find-and-modify------------")
+(c-print-all (q :testdb.testcoll))
+
+;;---------------------------update-operators(not pipeline)-------------------------------------------------------------
+
+(def modified-upserted (find-and-modify :testdb.testcoll
+                                        (upsert {:_id 5})
+                                        (set_ :name "name-with-update-operator-set")
                                         (fields-o :!_id :name)
                                         (new-o)))
 

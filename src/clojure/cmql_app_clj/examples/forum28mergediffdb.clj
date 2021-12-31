@@ -1,6 +1,8 @@
 (ns cmql-app-clj.examples.forum28mergediffdb
   (:refer-clojure :only [])
   (:use cmql-core.operators.operators
+        cmql-core.operators.qoperators
+        cmql-core.operators.uoperators
         cmql-core.operators.stages
         cmql-core.operators.options
         cmql-j.driver.cursor
@@ -10,9 +12,8 @@
         cmql-j.driver.utils
         cmql-j.arguments
         cmql-j.commands
-
         cmql-j.macros
-
+        flatland.ordered.map
         clojure.pprint)
   (:refer-clojure)
   (:require [clojure.core :as c])

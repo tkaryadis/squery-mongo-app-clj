@@ -1,6 +1,8 @@
 (ns cmql-app-clj.examples.forum16arraysintersection
   (:refer-clojure :only [])
   (:use cmql-core.operators.operators
+        cmql-core.operators.qoperators
+        cmql-core.operators.uoperators
         cmql-core.operators.stages
         cmql-core.operators.options
         cmql-j.driver.cursor
@@ -10,13 +12,12 @@
         cmql-j.driver.utils
         cmql-j.arguments
         cmql-j.commands
-
         cmql-j.macros
-
+        flatland.ordered.map
         clojure.pprint)
   (:refer-clojure)
   (:require [clojure.core :as c])
-  (:import (com.mongodb.client MongoClients)
+  (:import (com.mongodb.client MongoClients MongoCollection MongoClient)
            (com.mongodb MongoClientSettings)))
 
 ;;https://www.mongodb.com/community/forums/t/pull-or-pullall-to-delete-array-of-emails/117503

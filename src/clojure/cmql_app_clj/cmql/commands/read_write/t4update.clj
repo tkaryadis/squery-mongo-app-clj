@@ -1,6 +1,8 @@
 (ns cmql-app-clj.cmql.commands.read_write.t4update
   (:refer-clojure :only [])
   (:use cmql-core.operators.operators
+        cmql-core.operators.qoperators
+        cmql-core.operators.uoperators
         cmql-core.operators.stages
         cmql-core.operators.options
         cmql-j.driver.cursor
@@ -144,7 +146,7 @@
 ;;  the first document is the q(it cant be filters,i need a document as starting point of the update)
 (c-print-all
   (update- :testdb.grades
-           (uq {:_id 4}                          ; q=the first document,only if upsert
+           (uq (upsert {:_id 4})
                {:grades (if- (exists? :grades)
                              (map (fn [:member.]
                                         (if- (>= :member. 100) 100 :member.))

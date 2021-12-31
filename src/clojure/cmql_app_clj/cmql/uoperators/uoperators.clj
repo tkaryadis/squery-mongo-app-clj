@@ -1,4 +1,4 @@
-(ns cmql-app-clj.cmql.stages.lookup
+(ns cmql-app-clj.cmql.uoperators.uoperators
   (:refer-clojure :only [])
   (:use cmql-core.operators.operators
         cmql-core.operators.qoperators
@@ -20,37 +20,40 @@
   (:import (com.mongodb.client MongoClients MongoCollection MongoClient)
            (com.mongodb MongoClientSettings)))
 
+
 (update-defaults :client-settings (-> (MongoClientSettings/builder)
                                       (.codecRegistry clj-registry) ;;Remove this if you want to decode in Java Document
                                       (.build)))
 
 (update-defaults :client (MongoClients/create ^MongoClientSettings (defaults :client-settings)))
 
-(pprint (q :testdb.testcoll
-           (lookup :a :2.b :joined)
-           (command)))
 
-(pprint (q :testdb.testcoll
-           (lookup :a.d :2.b.c :joined)
-           (command)))
+(try (drop-collection :testdb.testcoll) (catch Exception e ""))
 
-(pprint (q :testdb.testcoll
-           (lookup-p :2
-                     [:pa. :a]
-                     [(= :pa. :afield)]
-                     :joined)
-           (command)))
+(insert :testdb.testcoll [{ "_id" 1, "a" 1,"results" [ 82, 85, 88 ] }
+                          { "_id" 2, "a" 2, "results" [ 75, 88, 89 ] }])
 
-(pprint (q :testdb.testcoll
-           (lookup-p [:a :2.b]
-                     [:pc. :c]
-                     [(= :pc. :d)]
-                     :joined)
-           (command)))
 
-(pprint (q :testdb.testcoll
-           (lookup-p [:a.b :2.c.d]
-                     [:pe. :e]
-                     [(= :pf. :g)]
-                     :joined)
-           (command)))
+(pprint (update- :testdb.testcoll
+                 (uq (upsert {:a 4})
+                     (+_ :a 1))
+                 (command)))
+
+(c-print-all (q :testdb.testcoll))
+
+;;;-------------------using interop and cmql arguments-----------------------------------------------------------------
+
+(try (drop-collection :testdb.testcoll) (catch Exception e ""))
+
+(insert :testdb.testcoll [{ "_id" 1, "a" 1,"results" [ 82, 85, 88 ] }
+                          { "_id" 2, "a" 2, "results" [ 75, 88, 89 ] }])
+
+
+(def coll ^MongoCollection (.getCollection (.getDatabase (defaults :client) "testdb") "testcoll"))
+
+(.updateOne coll
+            (d {:a 2})
+            (u (+_ :a 100)
+               (set_ :results [1 2 3])))
+
+(c-print-all (q :testdb.testcoll))

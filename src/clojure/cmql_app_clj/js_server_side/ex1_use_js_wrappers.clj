@@ -1,6 +1,8 @@
 (ns cmql-app-clj.js-server-side.ex1-use-js-wrappers
   (:refer-clojure :only [])
   (:use cmql-core.operators.operators
+        cmql-core.operators.qoperators
+        cmql-core.operators.uoperators
         cmql-core.operators.stages
         cmql-core.operators.options
         cmql-j.driver.cursor
@@ -11,9 +13,9 @@
         cmql-j.arguments
         cmql-j.commands
         cmql-j.macros
+        flatland.ordered.map
         clojure.pprint
-        cmql-app-clj.server-side-js.ex1-js-wrappers                  ;; wrappers
-        )
+        cmql-app-clj.server-side-js.ex1-js-wrappers )
   (:refer-clojure)
   (:require [clojure.core :as c])
   (:import (com.mongodb.client MongoClients MongoCollection MongoDatabase MongoClient)

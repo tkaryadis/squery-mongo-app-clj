@@ -1,20 +1,24 @@
 (ns cmql-app-clj.driver.transactions
   (:refer-clojure :only [])
-  (:use cmql-core.commands.operators.operators
-        cmql-core.commands.operators.options
-        cmql-core.commands.operators.stages
-        cmql-core.commands.administration
-        cmql-core.commands.diagnostic
-        cmql-core.commands.roles
-        cmql-core.commands.users
-        cmql-core.commands.read-write
-        cmql-core.driverj.client
-        cmql-core.driverj.document
-        cmql-core.driverj.transactions)
+  (:use cmql-core.operators.operators
+        cmql-core.operators.qoperators
+        cmql-core.operators.uoperators
+        cmql-core.operators.stages
+        cmql-core.operators.options
+        cmql-j.driver.cursor
+        cmql-j.driver.document
+        cmql-j.driver.settings
+        cmql-j.driver.transactions
+        cmql-j.driver.utils
+        cmql-j.arguments
+        cmql-j.commands
+        cmql-j.macros
+        flatland.ordered.map
+        clojure.pprint)
   (:refer-clojure)
-  (:require [clojure.core :as c]
-            [cmql-core.commands.operators.operators :as o])
-  (:import (com.mongodb.client MongoClient ClientSession)))
+  (:require [clojure.core :as c])
+  (:import (com.mongodb.client MongoClients MongoCollection MongoClient)
+           (com.mongodb MongoClientSettings)))
 
 (comment
 ;;transactions cannot run in standalone,replica set is used here

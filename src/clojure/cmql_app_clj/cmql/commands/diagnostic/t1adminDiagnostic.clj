@@ -1,6 +1,8 @@
-(ns cmql-app-clj.cmql.commands.read_write.t3find
+(ns cmql-app-clj.cmql.commands.diagnostic.t1adminDiagnostic
   (:refer-clojure :only [])
   (:use cmql-core.operators.operators
+        cmql-core.operators.qoperators
+        cmql-core.operators.uoperators
         cmql-core.operators.stages
         cmql-core.operators.options
         cmql-j.driver.cursor
@@ -23,26 +25,5 @@
 
 (update-defaults :client (MongoClients/create ^MongoClientSettings (defaults :client-settings)))
 
+(prn (get (server-status) :connections))
 
-(try (drop-collection :testdb.testcoll) (catch Exception e ""))
-
-(def docs [{ "_id"  1, :category  "food", "budget" 400, "spent" 450 }
-           { "_id"  2, "category"  "drinks", "budget" 100, "spent" 150 }
-           { "_id"  3, "category"  "clothes", "budget" 100, "spent" 50 }
-           { "_id"  4, "category"  "misc", "budget" 500, "spent" 300 }
-           { "_id"  5, "category"  "travel", "budget" 200, "spent" 650 }])
-
-(insert :testdb.testcoll docs)
-
-(println "----------After Insert------------")
-(c-print-all (q :testdb.testcoll))
-
-(println "----------After find------------")
-
-(c-print-all (fq :testdb.testcoll
-                 (> :spent 150)
-                 [:!_id :spent {:a (+ :spent 20)}]
-                 (sort :!spent)
-                 (limit 1)
-                 ;(command)
-                 ))

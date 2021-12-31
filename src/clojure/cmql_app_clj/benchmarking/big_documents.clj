@@ -1,6 +1,8 @@
 (ns cmql-app-clj.benchmarking.big-documents
   (:refer-clojure :only [])
   (:use cmql-core.operators.operators
+        cmql-core.operators.qoperators
+        cmql-core.operators.uoperators
         cmql-core.operators.stages
         cmql-core.operators.options
         cmql-j.driver.cursor
@@ -14,7 +16,7 @@
         clojure.pprint)
   (:refer-clojure)
   (:require [clojure.core :as c])
-  (:import (com.mongodb.client MongoClients MongoCollection MongoDatabase MongoClient)
+  (:import (com.mongodb.client MongoClients MongoCollection MongoClient)
            (com.mongodb MongoClientSettings)))
 
 

@@ -1,4 +1,4 @@
-(ns cmql-app-clj.cmql.stages.lookup
+(ns cmql-app-clj.cmql.commands.read_write.t3find
   (:refer-clojure :only [])
   (:use cmql-core.operators.operators
         cmql-core.operators.qoperators
@@ -13,7 +13,6 @@
         cmql-j.arguments
         cmql-j.commands
         cmql-j.macros
-        flatland.ordered.map
         clojure.pprint)
   (:refer-clojure)
   (:require [clojure.core :as c])
@@ -26,31 +25,26 @@
 
 (update-defaults :client (MongoClients/create ^MongoClientSettings (defaults :client-settings)))
 
-(pprint (q :testdb.testcoll
-           (lookup :a :2.b :joined)
-           (command)))
 
-(pprint (q :testdb.testcoll
-           (lookup :a.d :2.b.c :joined)
-           (command)))
+(try (drop-collection :testdb.testcoll) (catch Exception e ""))
 
-(pprint (q :testdb.testcoll
-           (lookup-p :2
-                     [:pa. :a]
-                     [(= :pa. :afield)]
-                     :joined)
-           (command)))
+(def docs [{ "_id"  1, :category  "food", "budget" 400, "spent" 450 }
+           { "_id"  2, "category"  "drinks", "budget" 100, "spent" 150 }
+           { "_id"  3, "category"  "clothes", "budget" 100, "spent" 50 }
+           { "_id"  4, "category"  "misc", "budget" 500, "spent" 300 }
+           { "_id"  5, "category"  "travel", "budget" 200, "spent" 650 }])
 
-(pprint (q :testdb.testcoll
-           (lookup-p [:a :2.b]
-                     [:pc. :c]
-                     [(= :pc. :d)]
-                     :joined)
-           (command)))
+(insert :testdb.testcoll docs)
 
-(pprint (q :testdb.testcoll
-           (lookup-p [:a.b :2.c.d]
-                     [:pe. :e]
-                     [(= :pf. :g)]
-                     :joined)
-           (command)))
+(println "----------After Insert------------")
+(c-print-all (q :testdb.testcoll))
+
+(println "----------After find------------")
+
+(c-print-all (fq :testdb.testcoll
+                 (> :spent 150)
+                 [:!_id :spent {:a (+ :spent 20)}]
+                 (sort :!spent)
+                 (limit 1)
+                 ;(command)
+                 ))

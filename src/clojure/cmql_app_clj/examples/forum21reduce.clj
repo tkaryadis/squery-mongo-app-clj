@@ -1,6 +1,8 @@
 (ns cmql-app-clj.examples.forum21reduce
   (:refer-clojure :only [])
   (:use cmql-core.operators.operators
+        cmql-core.operators.qoperators
+        cmql-core.operators.uoperators
         cmql-core.operators.stages
         cmql-core.operators.options
         cmql-j.driver.cursor
@@ -14,12 +16,9 @@
         flatland.ordered.map
         clojure.pprint)
   (:refer-clojure)
-  (:require [clojure.core :as c]
-            [clojure.data.json :as tojson])
+  (:require [clojure.core :as c])
   (:import (com.mongodb.client MongoClients MongoCollection MongoClient)
-           (com.mongodb MongoClientSettings)
-           (org.bson.types ObjectId)
-           (java.util Date Calendar)))
+           (com.mongodb MongoClientSettings)))
 
 (update-defaults :client-settings (-> (MongoClientSettings/builder)
                                       (.codecRegistry clj-registry)

@@ -1,6 +1,8 @@
 (ns cmql-app-clj.examples.forum13arraysvars
   (:refer-clojure :only [])
   (:use cmql-core.operators.operators
+        cmql-core.operators.qoperators
+        cmql-core.operators.uoperators
         cmql-core.operators.stages
         cmql-core.operators.options
         cmql-j.driver.cursor
@@ -10,13 +12,12 @@
         cmql-j.driver.utils
         cmql-j.arguments
         cmql-j.commands
-
         cmql-j.macros
-
+        flatland.ordered.map
         clojure.pprint)
   (:refer-clojure)
   (:require [clojure.core :as c])
-  (:import (com.mongodb.client MongoClients MongoCollection MongoDatabase MongoClient)
+  (:import (com.mongodb.client MongoClients MongoCollection MongoClient)
            (com.mongodb MongoClientSettings)))
 
 ;;https://www.mongodb.com/community/forums/t/mongodb-aggregation-lookup-key-value-based-on-another-key-value-within-an-array/116373

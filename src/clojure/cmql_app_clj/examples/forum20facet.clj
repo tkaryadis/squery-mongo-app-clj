@@ -1,6 +1,8 @@
 (ns cmql-app-clj.examples.forum20facet
   (:refer-clojure :only [])
   (:use cmql-core.operators.operators
+        cmql-core.operators.qoperators
+        cmql-core.operators.uoperators
         cmql-core.operators.stages
         cmql-core.operators.options
         cmql-j.driver.cursor
@@ -16,8 +18,7 @@
   (:refer-clojure)
   (:require [clojure.core :as c])
   (:import (com.mongodb.client MongoClients MongoCollection MongoClient)
-           (com.mongodb MongoClientSettings)
-           (org.bson.types ObjectId)))
+           (com.mongodb MongoClientSettings)))
 
 (update-defaults :client-settings (-> (MongoClientSettings/builder)
                                       (.codecRegistry clj-registry)
