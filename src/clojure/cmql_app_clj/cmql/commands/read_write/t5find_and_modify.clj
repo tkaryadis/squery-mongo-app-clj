@@ -98,7 +98,7 @@
 
 (def modified-upserted (find-and-modify :testdb.testcoll
                                         (upsert {:_id 5})
-                                        (set_ :name "name-with-update-operator-set")
+                                        (set!- :name "name-with-update-operator-set")
                                         (fields-o :!_id :name)
                                         (new-o)))
 
@@ -107,3 +107,15 @@
 
 (println "----------After find-and-modify------------")
 (c-print-all (q :testdb.testcoll))
+
+
+;;---------------------------replace document including the _id is not allowed => ERROR-----
+
+(def modified-upserted (find-and-modify :testdb.testcoll
+                                        (=? :_id 5)
+                                        {:update {:_id 100}}))
+
+(println "----------After find-and-modify------------")
+(c-print-all (q :testdb.testcoll))
+
+

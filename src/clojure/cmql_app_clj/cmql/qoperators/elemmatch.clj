@@ -77,6 +77,10 @@
 (insert :testdb.testcoll docs)
 
 (pprint (fq :testdb.testcoll
-            (q= :region "Asia")
-            (elem-match :languages (q= :iso639_1 "en"))
+            (=? :region "Asia")
+            (elem-match? :languages (=? :iso639_1 "en"))
             (command)))
+
+(c-print-all (fq :testdb.testcoll
+                 (=? :region "Asia")
+                 (elem-match? :languages (=? :iso639_1 "en"))))

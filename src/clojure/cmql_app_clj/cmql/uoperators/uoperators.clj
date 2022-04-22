@@ -36,7 +36,7 @@
 
 (pprint (update- :testdb.testcoll
                  (uq (upsert {:a 4})
-                     (+_ :a 1))
+                     (+! :a 1))
                  (command)))
 
 (c-print-all (q :testdb.testcoll))
@@ -51,9 +51,26 @@
 
 (def coll ^MongoCollection (.getCollection (.getDatabase (defaults :client) "testdb") "testcoll"))
 
+(defn po [x] x)
+
 (.updateOne coll
             (d {:a 2})
-            (u (+_ :a 100)
-               (set_ :results [1 2 3])))
+            (u (+! :a (po 100))
+               (assoc! :results [1 2 3])))
+
+
+(c-print-all (q :testdb.testcoll))
+
+(drop-collection :testdb.testcoll)
+
+(insert :testdb.testcoll [{"players" [{"id" 1234, "verses" [1 2 3]},
+                                      {"id" 1235, "verses" [5 6 7]}]}])
+
+(c-print-all (q :testdb.testcoll))
+
+;;using one or more raw mql update inside a cmql update with (mu ..)
+(update- :testdb.testcoll
+         (uq (mu { "$push" { "players.$[playerid].verses"  100 } }),
+             { "arrayFilters" [ { "playerid.id" { "$eq" 1235 } } ] }))
 
 (c-print-all (q :testdb.testcoll))

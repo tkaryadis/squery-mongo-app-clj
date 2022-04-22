@@ -29,14 +29,29 @@
 
 (try (drop-collection :testdb.testcoll) (catch Exception e ""))
 
-(insert :testdb.testcoll [{ "_id" 1, "a" 1,"results" [ 82, 85, 88 ] }
-                          { "_id" 2, "a" 2, "results" [ 75, 88, 89 ] }])
+(insert :testdb.testcoll [{"name" "a", "custom" true, "users" [{"_id" 1} {"_id" 2} {"_id" 3}]}
+                          {"name" "a", "custom" true, "users" [{"_id" 1} {"_id" 3}]}
+                          {"name" "a", "custom" false, "users" [{"_id" 1} {"_id" 3}]}])
 
-#_(pprint (update- :testdb.testcoll
-                 (uq (q= :a 1)
-                     (q> :a 0)
-                     (= :a 2))
-                 (command)))
+
+(pprint
+  (q :testdb.testcoll
+     (not? :custom (=? true))
+     (command)
+     ))
+
+(c-print-all
+  (q :testdb.testcoll
+     (or? (not? :custom (=? true))
+          (and? (=? :custom true) (superset? :users._id [2])))
+     ;(command)
+     ))
+
+;;aggregate(
+;          {"$match"
+;           {"$or"
+;            [{"$not" "$custom"}
+;             {"$and" [{"custom" {"$eq" true}} {"users._id" {"$all" [2]}}]}]}})
 
 #_(pprint (q :testdb.testcoll
            (q= :a 1)
@@ -72,14 +87,14 @@
            ;(elem-match :results (q>= 80) (q< 85))
            (command)))
 
-(pprint (q :testdb.testcoll
+#_(pprint (q :testdb.testcoll
            ;(elem-match :results (q>= 80) (q< 85))
            ;(elem-match :results (q>= 80) (q< 85))
            (qf {:_id (q= 1) :a 1})
            ;(= :_id 1)
             (command)))
 
-(pprint (fq :testdb.testcoll
+#_(pprint (fq :testdb.testcoll
             ;(elem-match :results (q>= 80) (q< 85))
             ;(elem-match :results (q>= 80) (q< 85))
             ;(qf {:_id (q= 1) :a 1})
