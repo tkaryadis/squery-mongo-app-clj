@@ -28,59 +28,44 @@
 
 
 (try (drop-collection :testdb.testcoll) (catch Exception e ""))
+(insert :testdb.testcoll {:ar [1 2 3]})
 
-(def docs [{"subregion" "Eastern Asia",
-           "latlng" [22.25 114.16666666],
-           "alpha3Code" "HKG",
-           "callingCodes" ["852"],
-           "numericCode" "344",
-           "area" 1104,
-           "altSpellings" ["HK" "香港"],
-           "translations"
-           {"nl" "Hongkong",
-            "pt" "Hong Kong",
-            "br" "Hong Kong",
-            "it" "Hong Kong",
-            "fa" "هنگ‌کنگ",
-            "hr" "Hong Kong",
-            "fr" "Hong Kong",
-            "de" "Hong Kong",
-            "es" "Hong Kong",
-            "ja" "香港"},
-           "demonym" "Chinese",
-           "name" "Hong Kong",
-           "region" "Asia",
-           "languages"
-           [{"iso639_1" "en",
-             "iso639_2" "eng",
-             "name" "English",
-             "nativeName" "English"}
-            {"iso639_1" "zh",
-             "iso639_2" "zho",
-             "name" "Chinese",
-             "nativeName" "中文 (Zhōngwén)"}],
-           "cioc" "HKG",
-           "currencies"
-           [{"code" "HKD", "name" "Hong Kong dollar", "symbol" "$"}],
-           "regionalBlocs" [],
-           "population" 7324300,
-           "borders" ["CHN"],
-           "capital" "City of Victoria",
-           "timezones" ["UTC+08:00"],
-           "alpha2Code" "HK",
-           "topLevelDomain" [".hk"],
-           "flag" "https://restcountries.eu/data/hkg.svg",
-           "nativeName" "香港",
-           "gini" 53.3}])
-
-
-(insert :testdb.testcoll docs)
-
-(pprint (fq :testdb.testcoll
-            (=? :region "Asia")
-            (elem-match? :languages (=? :iso639_1 "en"))
-            (command)))
-
+;;------------------------------------simple array match (1 argument call)
 (c-print-all (fq :testdb.testcoll
-                 (=? :region "Asia")
-                 (elem-match? :languages (=? :iso639_1 "en"))))
+                 (elem-match? :ar (=? 2))
+                 [:ar.$]))                ;;optional project, returns array with ONLY the matching member
+
+;;if i have many element-match, $ will be the last match
+(c-print-all (fq :testdb.testcoll
+                 (elem-match? :ar (=? 2))
+                 (elem-match? :ar (=? 3))
+                 [:ar.$]))
+
+(try (drop-collection :testdb.testcoll) (catch Exception e ""))
+(insert :testdb.testcoll {:ar [{:a 1} {:a 2}]})
+
+;;------------------------------------embeded array match+project (2 arguments call)
+(c-print-all (fq :testdb.testcoll
+                 (elem-match? :ar (=? :a 2))
+                 [:ar.$]))
+
+
+;;------------------------------------nested array match
+
+(try (drop-collection :testdb.testcoll) (catch Exception e ""))
+(insert :testdb.testcoll {:ar [[1 2] [3 4]]})
+
+;;nested array match (nested elem-matches)
+(c-print-all (fq :testdb.testcoll
+                 (elem-match? :ar (elem-match? (=? 1)))
+                 [:ar.$]))      ;;[[1,2]] element match returns array with 1 member, nested elem=>nested $
+
+;;------------------------------------nested array match-embeded
+
+(try (drop-collection :testdb.testcoll) (catch Exception e ""))
+(insert :testdb.testcoll {:ar [[{:a 1}] [{:a 2}]]})
+
+;;nested array match embeded (nested elem-matches)
+(c-print-all (fq :testdb.testcoll
+                 (elem-match? :ar (elem-match? (=? :a 2)))
+                 [:ar.$]))      ;;[[1,2]] element match returns array with 1 member, nested elem=>nested $

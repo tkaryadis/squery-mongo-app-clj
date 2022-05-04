@@ -18,7 +18,7 @@
   (:refer-clojure)
   (:require [clojure.core :as c])
   (:import (com.mongodb.client MongoClients MongoCollection MongoDatabase MongoClient)
-           (com.mongodb MongoClientSettings)
+           (com.mongodb MongoClientSettings ExplainVerbosity)
            (java.sql Date)))
 
 
@@ -28,7 +28,7 @@
 
 (update-defaults :client (MongoClients/create ^MongoClientSettings (defaults :client-settings)))
 
-;(try (drop-collection :testdb.testcoll) (catch Exception e ""))
+(try (drop-collection :testdb.testcoll) (catch Exception e ""))
 (try (drop-collection :testdb.testcoll2) (catch Exception e ""))
 (try (drop-collection :testdb.testcoll3) (catch Exception e ""))
 (try (drop-collection :testdb.testcoll4) (catch Exception e ""))
@@ -53,21 +53,30 @@
                  :timestamp (System/currentTimeMillis)}]
         (recur (inc n) (conj docs doc))))))
 
-#_(dotimes [x 1000] (add-docs 1000 (* x 100)))
+(dotimes [x 1000] (add-docs 100 (* x 100)))
 
 ;(create-index :testdb.testcoll (index [:project :env :!timestamp]))
 ;(create-index :testdb.testcoll (index [:project :env :timestamp]))
 ;(create-index :testdb.testcoll (index [:!timestamp]))
 
-#_(time (.toCollection (q :testdb.testcoll
+(time (c-take-all (q :testdb.testcoll
                           (sort :!timestamp)
                           (group {:_id {:project :project
                                         :env     :env}}
                                  {:latestDoc (first :ROOT.)})
                           (allow-disk-use)
-                          ;(limit 1)
-                          (out :testdb.testcoll2)
+                          (sort :_id.project)
+                          (limit 1)
                           )))
+
+(pprint (.explain (q :testdb.testcoll
+                     (sort :!timestamp)
+                     (group {:_id {:project :project
+                                      :env     :env}}
+                               {:latestDoc (first :ROOT.)})
+                     (allow-disk-use)
+                     (sort :_id.project)
+                     (limit 1))))
 
 #_(time (.toCollection (q :testdb.testcoll
                           (group {:_id {:project :project
@@ -208,10 +217,10 @@
                      ;(out :testdb.testcoll2)
                      )))
 
-(create-index :testdb.testcoll (index [:!timestamp]))
-(create-index :testdb.testcoll (index [:project :env :timestamp]))
+#_(create-index :testdb.testcoll (index [:!timestamp]))
+#_(create-index :testdb.testcoll (index [:project :env :timestamp]))
 
-(time (c-take-all (q :testdb.testcoll
+#_(time (c-take-all (q :testdb.testcoll
                      (sort :!timestamp)
                      (group {:_id {:project :project
                                    :env     :env}}
@@ -221,7 +230,7 @@
                      ;(out :testdb.testcoll2)
                      )))
 
-(time (c-take-all (q :testdb.testcoll
+#_(time (c-take-all (q :testdb.testcoll
                      (group {:_id {:project :project
                                    :env     :env}}
                             {:timestamp (max (let [] [:timestamp :_id]))})
@@ -231,7 +240,7 @@
                      ;(out :testdb.testcoll2)
                      )))
 
-(time (c-take-all (q :testdb.testcoll
+#_(time (c-take-all (q :testdb.testcoll
                      (group {:_id {:project :project
                                    :env     :env}}
                             {:timestamp (max (let [:v. [:timestamp :_id]] :v.))})
