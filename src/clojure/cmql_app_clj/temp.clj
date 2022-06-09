@@ -40,8 +40,8 @@
 (c-print-all (q :testdb.testcoll ))
 
 (prn (update- :testdb.testcoll
-              (uq (=- :status "PARTIALLY_REFUNDED")
-                  (exists?- :amount)
+              (uq (=? :status "PARTIALLY_REFUNDED")
+                  (exists?? :amount)
                   {:amountRefundRemaining (- :FIELD_B :FIELD_A)}  )))
 
 (prn "AFTER")
@@ -49,5 +49,5 @@
 
 #_(pprint (update- :testdb.testcoll
                    (uq (upsert {:a 4})
-                       (+_ :a 1))
+                       (+! :a 1))
                    (command)))

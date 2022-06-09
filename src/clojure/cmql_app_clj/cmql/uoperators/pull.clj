@@ -34,17 +34,50 @@
 
 
 (pprint (update- :testdb.testcoll
-              (uq (remove! (=? "color" nil)))
-              (command)))
-
-(pprint (update- :testdb.testcoll
-                 (uq (unset! "color"))
-                 (command)))
-
-(update- :testdb.testcoll
-         (uq (remove! (=? "color" nil)))
-         )
+              (uq (remove! :color (=? nil)))))
 
 (c-print-all (q :testdb.testcoll))
+
+
+(try (drop-collection :testdb.testcoll) (catch Exception e ""))
+
+(insert :testdb.testcoll [{"person" [{"name" "takis"},{"name" "john"}]}])
+
+(update- :testdb.testcoll
+         (uq (remove! :person (=? :name "takis"))))
+
+(c-print-all (q :testdb.testcoll))
+
+(try (drop-collection :testdb.testcoll) (catch Exception e ""))
+
+(insert :testdb.testcoll [{"person" [{"women" [{"name" "helen"} {"name" "julia"}]}]}])
+
+
+(c-print-all (q :testdb.testcoll))
+
+
+;;db.survey.updateMany(
+;  { },
+;  {
+;     $pull:
+;        {
+;           results:
+;              {
+;                 answers: { $elemMatch: { q: 2, a: { $gte: 8 } } }
+;              }
+;        }
+;  }
+;)
+
+(update- :testdb.testcoll
+         (uq (remove! :person (elem-match? :women (=? :name "helen")))))
+
+(pprint (update- :testdb.testcoll
+                 (uq (remove! :person (elem-match? :women (=? :name "helen"))))
+                 (command)))
+
+(c-print-all (q :testdb.testcoll))
+
+
 
 
